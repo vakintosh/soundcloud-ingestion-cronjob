@@ -1,0 +1,7 @@
+venv
+__pycache__
+sources
+feeds.txt
+soundcloud_state.db
+k8s/output.json
+README

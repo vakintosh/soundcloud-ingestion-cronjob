@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sc-ingest-cronjob
+  namespace: sc-ingest
+spec:
+  schedule: "*/15 * * * *" # Runs every 15 minutes
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          # REQUIRED to run the one-time migration first, then this CronJob.
+          # If migration is already done, just ignore this step.
+          restartPolicy: OnFailure
+          containers:
+          - name: sc-ingest-container
+            image: vakintosh/sc-ingest:0.1.0 # REPLACE with your image name
+            command: ["python3", "sc_ingest.py"] # Command to run the main script
+            
+            # 1. Environment Variables Alignment
+            env:
+            - name: DB_PATH # Matches os.getenv("DB_PATH") in your scripts
+              value: "/app/data/soundcloud_state.db" 
+            - name: FEEDS_CONFIG_PATH # Matches os.getenv("FEEDS_CONFIG_PATH") in sc_ingest.py
+              value: "/app/config/feeds.txt" 
+            resources:
+              requests:
+                cpu: "50m"
+                memory: "128Mi"
+              limits:
+                cpu: "250m"
+                memory: "256Mi"
+            # 2. Volume Mounts
+            volumeMounts:
+            - name: state-volume
+              mountPath: /app/data # Where DB_PATH points
+            - name: config-volume
+              mountPath: /app/config # Where FEEDS_CONFIG_PATH lives
+              readOnly: true # ConfigMap content should not be changed
+          # 3. Volume Definitions (Source)
+          volumes:
+          - name: state-volume
+            persistentVolumeClaim:
+              claimName: soundcloud-state-pvc
+          - name: config-volume
+            configMap:
+              name: soundcloud-feeds-config
+              items:
+              - key: feeds.txt
+                path: feeds.txt # Mounts the ConfigMap data item 'feeds.txt' to the file 'feeds.txt'
