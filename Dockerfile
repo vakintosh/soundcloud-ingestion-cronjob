@@ -1,11 +1,16 @@
 FROM python:3.11-slim
 
-
-ENV PYTHONUNBUFFERED 1
-
+ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir uv
 
-COPY sc_ingest.py stateManager.py /app/
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --frozen
+
+COPY main.py stateManager.py ./
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["python", "main.py"]

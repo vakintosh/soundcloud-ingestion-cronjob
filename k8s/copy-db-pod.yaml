@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sc-ingest-db-copy-pod
+  namespace: sc-ingest
+spec:
+  restartPolicy: Never
+  containers:
+  - name: copier
+    image: busybox
+    command: ['sh', '-c', 'sleep 3600']
+    volumeMounts:
+    - name: state-volume
+      mountPath: /app/data
+  volumes:
+  - name: state-volume
+    persistentVolumeClaim:
+      claimName: sc-ingest-pvc

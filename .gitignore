@@ -5,3 +5,5 @@ feeds.txt
 soundcloud_state.db
 k8s/output.json
 README
+export.sh
+copy_db_to_pvc.md

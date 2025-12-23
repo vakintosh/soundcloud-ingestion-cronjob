@@ -1,0 +1,13 @@
+[project]
+name = "sc-ingest"
+version = "0.1.0"
+description = "A Kubernetes-scheduled Python ingestion service that polls Soundcloud RSS feeds, leverages SQLite for idempotent state management, and emits normalized JSON events to stdout for consumption by downstream systems"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "feedparser>=6.0.12",
+    "pydantic>=2.12.5",
+]
+authors = [
+    { name = "vakintosh", email = "hello@vakintosh.com" }
+]

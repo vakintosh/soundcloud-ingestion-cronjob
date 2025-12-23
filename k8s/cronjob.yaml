@@ -4,7 +4,8 @@ metadata:
   name: sc-ingest-cronjob
   namespace: sc-ingest
 spec:
-  schedule: "*/15 * * * *"
+  # Need to be updated to run every week
+  schedule: "0 0 29 2 *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
@@ -15,8 +16,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: sc-ingest-container
-            image: vakintosh/sc-ingest:0.1.0 
-            command: ["python3", "sc_ingest.py"] 
+            image: vakintosh/sc-ingest:0.2.1 
+            command: ["python3", "main.py"] 
             env:
             - name: DB_PATH 
               value: "/app/data/soundcloud_state.db" 
@@ -38,10 +39,10 @@ spec:
           volumes:
           - name: state-volume
             persistentVolumeClaim:
-              claimName: soundcloud-state-pvc
+              claimName: sc-ingest-pvc
           - name: config-volume
             configMap:
-              name: soundcloud-feeds-config
+              name: sc-ingest-config
               items:
               - key: feeds.txt
                 path: feeds.txt
