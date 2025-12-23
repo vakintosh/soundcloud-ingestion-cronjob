@@ -1,5 +1,3 @@
-# stateManager.py
-
 import sqlite3
 
 class SoundcloudStateStore:
@@ -30,6 +28,11 @@ class SoundcloudStateStore:
     def track_has_been_seen(self, track_id: str) -> bool :
         cursor = self.cur.execute('SELECT 1 FROM seen_tracks WHERE track_id = ?', (track_id,))
         return cursor.fetchone() is not None
+    
+    def get_all_seen_track_ids(self) -> set[str]:
+        """Retrieve all seen track IDs as a set for O(1) lookups."""
+        cursor = self.cur.execute('SELECT track_id FROM seen_tracks')
+        return {row[0] for row in cursor.fetchall()}
 
     def mark_track_as_seen(self, track_id: str , ingested_at: str ) -> None:
         with self.conn:

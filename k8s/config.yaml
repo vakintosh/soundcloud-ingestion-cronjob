@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: soundcloud-feeds-config
+  name: sc-ingest-config
   namespace: sc-ingest
 data:
   feeds.txt: |
@@ -13,7 +13,8 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: soundcloud-state-pvc
+  name: sc-ingest-pvc
+  namespace: sc-ingest
 spec:
   accessModes:
     - ReadWriteOnce
